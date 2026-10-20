@@ -1,0 +1,75 @@
+# Docker Compose orchestration for the Heart Disease ML mini-project.
+#
+#   docker compose build                # build the shared image
+#   docker compose run --rm trainer     # finite training job (on demand)
+#   docker compose up -d app            # start Streamlit at :8501
+#   docker compose down                 # stop containers, KEEP volumes
+#
+# Never run `docker compose down -v` unless you intend to delete the
+# persistent dataset/model/report volumes.
+
+name: heart-disease-ml
+
+x-service-base: &service-base
+  image: heart-disease-ml:latest
+  build:
+    context: .
+  networks:
+    - heart-net
+  environment:
+    DATA_DIR: /app/data
+    ARTIFACTS_DIR: /app/artifacts
+    REPORTS_DIR: /app/reports
+    RANDOM_SEED: "${RANDOM_SEED:-42}"
+    TEST_SIZE: "${TEST_SIZE:-0.2}"
+    DATASET_URL: "${DATASET_URL:-https://archive.ics.uci.edu/static/public/45/heart+disease.zip}"
+  volumes:
+    - heart_dataset_data:/app/data
+    - heart_model_artifacts:/app/artifacts
+    - heart_experiment_reports:/app/reports
+
+services:
+  app:
+    <<: *service-base
+    command:
+      - streamlit
+      - run
+      - app.py
+      - --server.port=8501
+      - --server.address=0.0.0.0
+      - --server.headless=true
+      - --browser.gatherUsageStats=false
+    ports:
+      - "${APP_PORT:-8501}:8501"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request as u,sys; sys.exit(0 if u.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=3).read().strip()==b'ok' else 1)"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Finite, on-demand training job. `docker compose run --rm trainer`
+  # downloads/validates the dataset, trains + evaluates all models and exits.
+  trainer:
+    <<: *service-base
+    command: ["python", "-m", "src.models.train"]
+    restart: "no"
+    healthcheck:
+      disable: true
+
+networks:
+  heart-net:
+    driver: bridge
+
+volumes:
+  heart_dataset_data:
+    name: heart_dataset_data
+  heart_model_artifacts:
+    name: heart_model_artifacts
+  heart_experiment_reports:
+    name: heart_experiment_reports

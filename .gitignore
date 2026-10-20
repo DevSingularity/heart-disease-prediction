@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Secrets / local env (never commit real .env files)
+.env
+*.env.local
+
+# Persistent experiment data (regenerate with the trainer service)
+data/*
+!data/README.md
+!data/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+reports/*
+!reports/.gitkeep
+
+# Backups of Docker volumes
+backups/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

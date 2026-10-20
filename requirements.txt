@@ -1,0 +1,14 @@
+# Pinned for python:3.11.10-slim-bookworm (see Dockerfile / README).
+# Direct dependencies only; transitive deps resolve to compatible versions.
+numpy==1.26.4
+pandas==2.2.3
+scikit-learn==1.5.2
+matplotlib==3.9.2
+seaborn==0.13.2
+streamlit==1.41.1
+# pyarrow is pulled in by Streamlit; newer releases hard-require NumPy >= 2.0,
+# so a version compatible with the pinned numpy==1.26.4 is selected explicitly.
+pyarrow==17.0.0
+joblib==1.4.2
+tabulate==0.9.0
+pytest==8.3.4

@@ -1,0 +1,38 @@
+# VCS / editor
+.git
+.gitignore
+.idea
+.vscode
+.DS_Store
+
+# Python caches / envs
+.venv
+venv
+env
+__pycache__
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+*.egg-info
+
+# Secrets
+.env
+*.env.local
+
+# Persistent data (mounted as named volumes instead)
+data/*
+!data/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+reports/*
+!reports/.gitkeep
+
+# Docker build inputs themselves + docs not needed inside the image
+Dockerfile
+compose.yaml
+.dockerignore
+README.md
+PROMPT.md
+backups
